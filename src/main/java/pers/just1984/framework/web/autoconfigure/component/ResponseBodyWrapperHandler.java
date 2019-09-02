@@ -1,7 +1,6 @@
 package pers.just1984.framework.web.autoconfigure.component;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.method.support.ModelAndViewContainer;
@@ -10,8 +9,6 @@ import pers.just1984.framework.web.autoconfigure.cache.ResponseBodyWrapperCache;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Objects;
 
 /**
  * @description:
@@ -43,10 +40,7 @@ public class ResponseBodyWrapperHandler implements HandlerMethodReturnValueHandl
                 returnValue = ResponseBodyWrapper.DefaultResponseBodyWrapper.INSTANCE.wrap(returnValue);
             } else {
                 ResponseBodyWrapper specialWrapperInstance = getSpecialWrapperInstance(responseBodyWrapperClazz);
-                Method wrapMethod = ReflectionUtils.findMethod(responseBodyWrapperClazz, "wrap", Object.class);
-                if (Objects.nonNull(wrapMethod)) {
-                    returnValue = ReflectionUtils.invokeMethod(wrapMethod, specialWrapperInstance, returnValue);
-                }
+                returnValue = specialWrapperInstance.wrap(returnValue);
             }
         }
         this.delegate.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
