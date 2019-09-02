@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+pers.just1984.framework.web.autoconfigure.configuration.JustWebMvcAutoConfiguration
