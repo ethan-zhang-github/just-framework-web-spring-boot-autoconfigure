@@ -11,11 +11,9 @@ import pers.just1984.framework.web.autoconfigure.bean.ResponseBodyEntityBuilder;
 @FunctionalInterface
 public interface ResponseBodyWrapper extends Wrapper {
 
-    class DefaultResponseBodyWrapper implements ResponseBodyWrapper {
+    enum DefaultResponseBodyWrapper implements ResponseBodyWrapper {
 
-        private DefaultResponseBodyWrapper() {}
-
-        public static final DefaultResponseBodyWrapper INSTANCE = new DefaultResponseBodyWrapper();
+        INSTANCE;
 
         @Override
         public Object wrap(Object src) {
