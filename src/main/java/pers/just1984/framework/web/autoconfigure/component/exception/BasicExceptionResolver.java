@@ -1,6 +1,6 @@
 package pers.just1984.framework.web.autoconfigure.component.exception;
 
-import org.springframework.core.Ordered;
+import lombok.extern.slf4j.Slf4j;
 import pers.just1984.framework.web.autoconfigure.bean.ResponseBodyEntityBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +12,8 @@ import java.util.Map;
  * @author: zhangyifan@wshifu.com
  * @date: 2019-09-04 9:56
  */
-public class BasicExceptionResolver extends AbstractExceptionResolver implements Ordered {
+@Slf4j
+public class BasicExceptionResolver extends AbstractExceptionResolver {
 
     public static final BasicExceptionResolver INSTANCE = new BasicExceptionResolver();
 
@@ -25,12 +26,8 @@ public class BasicExceptionResolver extends AbstractExceptionResolver implements
 
     @Override
     public Map<String, Object> resolve(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {
+        log.error("BasicExceptionResolver Catch Exception : ", e);
         return ResponseBodyEntityBuilder.error(e.getMessage()).toMap();
-    }
-
-    @Override
-    public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 1;
     }
 
 }

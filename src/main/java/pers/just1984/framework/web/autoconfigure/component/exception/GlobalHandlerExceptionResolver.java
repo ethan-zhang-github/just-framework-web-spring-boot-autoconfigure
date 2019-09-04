@@ -41,9 +41,6 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
         if (properties.getGlobalExceptionHandler().isEnableDefaultExceptionHandler()) {
             exceptionResolvers.add(DefaultExceptionResolver.INSTANCE);
         }
-        if (properties.getGlobalExceptionHandler().isEnableBasicExceptionHandler()) {
-            exceptionResolvers.add(BasicExceptionResolver.INSTANCE);
-        }
         if (!CollectionUtils.isEmpty(exceptionResolvers)) {
             AnnotationAwareOrderComparator.sort(exceptionResolvers);
         }
@@ -73,7 +70,7 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
 
     private ExceptionResolver choose(Exception e) {
         return exceptionResolvers.stream().filter(resolver -> resolver.support(e)).findFirst()
-                .orElse(DefaultExceptionResolver.INSTANCE);
+                .orElse(BasicExceptionResolver.INSTANCE);
     }
 
 }
