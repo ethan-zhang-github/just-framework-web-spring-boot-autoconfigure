@@ -1,11 +1,11 @@
 package pers.just1984.framework.web.autoconfigure.component.exception;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.beans.BeanMap;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -14,7 +14,10 @@ import pers.just1984.framework.web.autoconfigure.configuration.property.JustWebM
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @description:
@@ -32,11 +35,14 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        if (Objects.isNull(exceptionResolvers)) {
+            exceptionResolvers = new ArrayList<>();
+        }
         if (properties.getGlobalExceptionHandler().isEnableDefaultExceptionHandler()) {
-            if (Objects.isNull(exceptionResolvers)) {
-                exceptionResolvers = new ArrayList<>();
-            }
             exceptionResolvers.add(DefaultExceptionResolver.INSTANCE);
+        }
+        if (properties.getGlobalExceptionHandler().isEnableBasicExceptionHandler()) {
+            exceptionResolvers.add(BasicExceptionResolver.INSTANCE);
         }
         if (!CollectionUtils.isEmpty(exceptionResolvers)) {
             AnnotationAwareOrderComparator.sort(exceptionResolvers);
@@ -55,7 +61,7 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
             resMap = defaultExceptionResolver.resolve(request, response, handler, e);
         } else {
             Object resolved = exceptionResolver.resolve(request, response, handler, e);
-            resMap = objToMap(resolved);
+            resMap = JSONObject.parseObject(JSONObject.toJSONString(resolved), Map.class);
         }
         ModelAndView mv = new ModelAndView();
         FastJsonJsonView jsonView = new FastJsonJsonView();
@@ -68,13 +74,6 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
     private ExceptionResolver choose(Exception e) {
         return exceptionResolvers.stream().filter(resolver -> resolver.support(e)).findFirst()
                 .orElse(DefaultExceptionResolver.INSTANCE);
-    }
-
-    private Map<String, Object> objToMap(Object obj) {
-        Map<String, Object> map = new HashMap<>(1 << 4);
-        BeanMap beanMap = BeanMap.create(obj);
-        map.putAll(beanMap);
-        return map;
     }
 
 }

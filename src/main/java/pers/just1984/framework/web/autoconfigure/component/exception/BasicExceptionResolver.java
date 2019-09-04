@@ -10,28 +10,27 @@ import java.util.Map;
 /**
  * @description:
  * @author: zhangyifan@wshifu.com
- * @date: 2019-09-03 15:32
+ * @date: 2019-09-04 9:56
  */
-public class DefaultExceptionResolver extends AbstractExceptionResolver implements Ordered {
+public class BasicExceptionResolver extends AbstractExceptionResolver implements Ordered {
 
-    public static final DefaultExceptionResolver INSTANCE = new DefaultExceptionResolver();
+    public static final BasicExceptionResolver INSTANCE = new BasicExceptionResolver();
 
-    private DefaultExceptionResolver() {}
+    private BasicExceptionResolver() {}
 
     @Override
     protected Class<? extends Exception>[] initSupport() {
-        return new Class[] {JustException.class};
+        return new Class[] {Exception.class};
     }
 
     @Override
     public Map<String, Object> resolve(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {
-        JustException je = JustException.class.cast(e);
-        return ResponseBodyEntityBuilder.error(je.getCode(), je.getMessage()).toMap();
+        return ResponseBodyEntityBuilder.error(e.getMessage()).toMap();
     }
 
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE;
+        return Ordered.HIGHEST_PRECEDENCE + 1;
     }
 
 }
