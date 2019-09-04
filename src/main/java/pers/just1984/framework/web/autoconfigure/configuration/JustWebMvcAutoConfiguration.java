@@ -18,14 +18,14 @@ import pers.just1984.framework.web.autoconfigure.configuration.property.JustWebM
  * @date: 2019-09-02 11:08
  */
 @Slf4j
-@Configuration
 @ConditionalOnWebApplication
 @ConditionalOnProperty(prefix = JustWebMvcProperties.PREFIX, name = "enable", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(JustWebMvcProperties.class)
+@Configuration
 public class JustWebMvcAutoConfiguration {
 
     @Autowired
-    private JustWebMvcProperties justWebMvcProperties;
+    private JustWebMvcProperties properties;
 
     @Bean
     @ConditionalOnProperty(prefix = JustWebMvcProperties.ResponseBodyWrapProperties.PREFIX, name = "enable", havingValue = "true", matchIfMissing = true)
