@@ -42,6 +42,8 @@ public class JustWebMvcProperties {
 
         private boolean enableDefaultExceptionHandler = true;
 
+        private boolean enableBasicExceptionHandler = false;
+
     }
 
 }

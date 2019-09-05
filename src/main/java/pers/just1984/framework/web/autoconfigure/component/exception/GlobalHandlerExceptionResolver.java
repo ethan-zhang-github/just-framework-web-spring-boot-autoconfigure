@@ -6,6 +6,7 @@ import com.alibaba.fastjson.support.spring.FastJsonJsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -25,7 +26,7 @@ import java.util.Objects;
  * @date: 2019-09-03 16:30
  */
 @Slf4j
-public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver, InitializingBean {
+public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver, InitializingBean, Ordered {
 
     @Autowired
     private JustWebMvcProperties properties;
@@ -41,6 +42,9 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
         if (properties.getGlobalExceptionHandler().isEnableDefaultExceptionHandler()) {
             exceptionResolvers.add(DefaultExceptionResolver.INSTANCE);
         }
+        if (properties.getGlobalExceptionHandler().isEnableBasicExceptionHandler()) {
+            exceptionResolvers.add(BasicExceptionResolver.INSTANCE);
+        }
         if (!CollectionUtils.isEmpty(exceptionResolvers)) {
             AnnotationAwareOrderComparator.sort(exceptionResolvers);
         }
@@ -52,6 +56,9 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
     @Override
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception e) {
         ExceptionResolver exceptionResolver = choose(e);
+        if (Objects.isNull(exceptionResolver)) {
+            return null;
+        }
         Map<String, Object> resMap;
         if (exceptionResolver instanceof DefaultExceptionResolver) {
             DefaultExceptionResolver defaultExceptionResolver = (DefaultExceptionResolver) exceptionResolver;
@@ -69,8 +76,11 @@ public class GlobalHandlerExceptionResolver implements HandlerExceptionResolver,
     }
 
     private ExceptionResolver choose(Exception e) {
-        return exceptionResolvers.stream().filter(resolver -> resolver.support(e)).findFirst()
-                .orElse(BasicExceptionResolver.INSTANCE);
+        return exceptionResolvers.stream().filter(resolver -> resolver.support(e)).findFirst().orElse(null);
     }
 
+    @Override
+    public int getOrder() {
+        return -1;
+    }
 }
